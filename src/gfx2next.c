@@ -44,7 +44,7 @@ int _CRT_glob = 0;
 #define CUTE_ASEPRITE_IMPLEMENTATION
 #include "cute_aseprite.h"
 
-#define VERSION						"1.1.19"
+#define VERSION						"1.1.20"
 
 #define DIR_SEPERATOR_CHAR			'\\'
 
@@ -2427,22 +2427,47 @@ static void write_font()
 	uint32_t char_count = image_size / 8;
 	uint8_t *p_buffer = malloc(image_size);
 	
-	for (int i = 0; i < char_count; i++)
+	if (m_args.tile_y)
 	{
-		int bank_x;
-		uint8_t *p_data = get_bank_width_height(m_next_image, i, 8, 8, 64, &bank_x);
-		
-		for (int y = 0; y < 8; y++)
+		int bytes_per_row = m_image_width / 8;
+
+		for (int y = 0; y < m_image_height; y++)
 		{
-			uint8_t data = 0;
-			
-			for (int x = 0; x < 8; x++)
+			for (int bx = 0; bx < bytes_per_row; bx++)
 			{
-				if (p_data[y * 8 + x])
-					data |= 1 << (7 - x);
+				uint8_t data = 0;
+
+				for (int bit = 0; bit < 8; bit++)
+				{
+					int x = bx * 8 + bit;
+
+					if (m_next_image[y * m_image_width + x])
+						data |= (uint8_t)(1u << (7 - bit));
+				}
+
+				p_buffer[y * bytes_per_row + bx] = data;
 			}
-			
-			p_buffer[i * 8 + y] = data;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < (int)char_count; i++)
+		{
+			int bank_x;
+			uint8_t *p_data = get_bank_width_height(m_next_image, i, 8, 8, 64, &bank_x);
+
+			for (int y = 0; y < 8; y++)
+			{
+				uint8_t data = 0;
+
+				for (int x = 0; x < 8; x++)
+				{
+					if (p_data[y * 8 + x])
+						data |= (uint8_t)(1u << (7 - x));
+				}
+
+				p_buffer[i * 8 + y] = data;
+			}
 		}
 	}
 	
