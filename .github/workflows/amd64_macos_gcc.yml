@@ -2,6 +2,9 @@ name: amd64_macos_gcc
 
 on: [push]
 
+permissions:
+  contents: write
+
 jobs:
 
   amd64_macos_gcc:
