@@ -30,7 +30,7 @@ jobs:
         files: README.md build/gfx2next.exe build/msys-2.0.dll
         dest: build/gfx2next_Windows_amd64.zip
     - name: Upload to Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Artifacts
         path: build/gfx2next_Windows_amd64.zip

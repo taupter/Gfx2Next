@@ -27,7 +27,7 @@ jobs:
           gfx2next
         outPath: build/gfx2next_Linux_amd64.tar.gz
     - name: Upload to Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Artifacts
         path: build/gfx2next_Linux_amd64.tar.gz
