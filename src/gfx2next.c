@@ -209,6 +209,7 @@ typedef struct
 	char *out_filename;
 	bool debug;
 	bool font;
+	bool font_y;
 	bool screen;
 	bool screen_attribs;
 	bool bitmap;
@@ -869,6 +870,7 @@ static void print_usage(void)
 	printf("  -version                Output version\n");
 	printf("  -debug                  Output additional debug information\n");
 	printf("  -font                   Sets output to Next font format (.spr)\n");
+	printf("  -font-y                 Get font in Y order first. (Default is X order first)\n");
 	printf("  -screen                 Sets output to Spectrum screen format (.scr)\n");
 	printf("  -screen-noattribs       Remove color attributes\n");
 	printf("  -bitmap                 Sets output to Next bitmap mode (.nxi)\n");
@@ -969,6 +971,12 @@ static bool parse_args(int argc, char *argv[], arguments_t *args)
 			else if (!strcmp(argv[i], "-font"))
 			{
 				m_args.font = true;
+				m_args.pal_mode = PALMODE_NONE;
+			}
+			else if (!strcmp(argv[i], "-font-y"))
+			{
+				m_args.font = true;
+				m_args.font_y = true;
 				m_args.pal_mode = PALMODE_NONE;
 			}
 			else if (!strcmp(argv[i], "-screen"))
@@ -2150,7 +2158,7 @@ static void write_header_file(char *p_filename, bool type_16bit)
 	alphanumeric_to_underscore(p_filename);
 	
 	fprintf(m_header_file, "extern %s %s[];\n", type_16bit ? "uint16_t" : "uint8_t", p_filename);
-	fprintf(m_header_file, "extern uint8_t *%s_end;\n", p_filename);
+	fprintf(m_header_file, "extern uint8_t %s_end[];\n", p_filename);
 }
 
 static void write_header_header(char *p_filename)
@@ -2175,7 +2183,7 @@ static void write_header_sequence()
 	char header_filename[256] = { 0 };
 	create_filename(header_filename, m_args.out_filename, "_sequence", false);
 	
-	fprintf(m_header_file, "extern uint8_t *%s;\n", header_filename);
+	fprintf(m_header_file, "extern uint8_t %s[];\n", header_filename);
 }
 
 static void read_file(char *p_filename, uint8_t *p_buffer, uint32_t buffer_size)
@@ -2427,7 +2435,7 @@ static void write_font()
 	uint32_t char_count = image_size / 8;
 	uint8_t *p_buffer = malloc(image_size);
 	
-	if (m_args.tile_y)
+	if (m_args.font_y)
 	{
 		int bytes_per_row = m_image_width / 8;
 
@@ -2576,8 +2584,8 @@ static void write_screen()
 			}
 			
 			// Improve compression ratio
-			uint8_t paper = get_screen_color_attribs(attr[0], false);
-			uint8_t ink = get_screen_color_attribs(attr[1], true);
+			//uint8_t paper = get_screen_color_attribs(attr[0], false);
+			//uint8_t ink = get_screen_color_attribs(attr[1], true);
 			
             // If there are more ink bits than paper bits
             // switch them.

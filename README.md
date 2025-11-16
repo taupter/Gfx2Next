@@ -25,6 +25,7 @@ gfx2next [options] &lt;srcfile&gt; [&lt;dstfile&gt;]
 |---|---|
 |-debug|Output additional debug information|
 |-font|Sets output to Next font format (.spr)|
+|-font-y|Get font in Y order first. (Default is X order first)|
 |-screen|Sets output to Spectrum screen format (.scr)|
 |-screen-noattribs|Remove color attributes|
 |-bitmap|Sets output to Next bitmap mode (.nxi)|
